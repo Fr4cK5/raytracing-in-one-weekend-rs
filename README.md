@@ -3,7 +3,7 @@
 This is an implementation of the book and online-post "Raytracing in one weekend".
 
 If you'd like to do this yourself, check it out [here](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
-For an overview of all other available ressources, visit their [io page](https://raytracing.github.io/)!
+For an overview of all other available resources, visit their [io page](https://raytracing.github.io/)!
 
 # Usage
 
