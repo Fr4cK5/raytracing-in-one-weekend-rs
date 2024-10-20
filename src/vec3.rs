@@ -24,12 +24,15 @@ impl Vec3 {
         return Self(-self.0, -self.1, -self.2);
     }
 
+    #[inline]
     pub fn x(&self) -> f64 {
         return self.0;
     }
+    #[inline]
     pub fn y(&self) -> f64 {
         return self.1;
     }
+    #[inline]
     pub fn z(&self) -> f64 {
         return self.2;
     }

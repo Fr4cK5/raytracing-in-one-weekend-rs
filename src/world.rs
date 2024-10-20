@@ -1,21 +1,20 @@
-use crate::{hit::Hit, ray::Ray, sphere::Sphere};
+use crate::{hit::Hit, interval::Interval, ray::Ray, sphere::Sphere};
 
 pub type World = Vec<Sphere>;
 
 pub trait AnyHit {
-    fn any_hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<Hit>;
+    fn any_hit(&self, r: &Ray, interval: Interval) -> Option<Hit>;
 }
 
 impl AnyHit for World {
-    fn any_hit(&self, r: &Ray, tmin: f64, tmax: f64) -> Option<Hit> {
+    fn any_hit(&self, r: &Ray, mut interval: Interval) -> Option<Hit> {
         let mut hit = Hit::default();
         let mut has_hit = false;
-        let mut closest = tmax;
 
         for item in self.iter() {
-            if item.hit(r, tmin, closest, &mut hit) {
+            if item.hit(r, &interval, &mut hit) {
                 has_hit = true;
-                closest = hit.t;
+                interval.max = hit.t;
             }
         }
 

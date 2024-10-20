@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::{hit::Hit, ray::Ray, vec3::{Point3, Vec3}};
+use crate::{hit::Hit, interval::Interval, ray::Ray, vec3::{Point3, Vec3}};
 
 pub struct Sphere {
     pub center: Point3,
@@ -12,7 +12,7 @@ impl Sphere {
         return Self { center, radius };
     }
 
-    pub fn hit(&self, r: &Ray, tmin: f64, tmax: f64, hit: &mut Hit) -> bool {
+    pub fn hit(&self, r: &Ray, interval: &Interval, hit: &mut Hit) -> bool {
         let oc = self.center - r.origin;
         let a = r.direction.len_squared();
         let h = r.direction.dot(&oc);
@@ -27,9 +27,9 @@ impl Sphere {
         let disc_sqrt = disc.sqrt();
 
         let mut root = (h - disc_sqrt) / a;
-        if root <= tmin || tmax <= root {
+        if !interval.sourrounds(root) {
             root = (h + disc_sqrt) / a;
-            if root <= tmin || tmax <= root {
+            if !interval.sourrounds(root) {
                 return false;
             }
         }

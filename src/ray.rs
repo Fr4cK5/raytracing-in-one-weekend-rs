@@ -10,6 +10,6 @@ impl Ray {
         return Ray { origin, direction };
     }
     pub fn at(&self, t: f64) -> Point3 {
-        return self.origin.clone() + self.direction.mul(t);
+        return self.origin + self.direction.mul(t);
     }
 }
