@@ -3,13 +3,11 @@
 #![allow(clippy::needless_return)]
 
 use core::f64;
-use std::{fs, time::Instant};
 
 use camera::Camera;
-use interval::Interval;
 use ray::Ray;
-use vec3::{Color, Point3, Vec3};
-use world::{AnyHit, World};
+use vec3::{Point3, Vec3};
+use world::World;
 
 mod camera;
 mod color_utils;
@@ -38,16 +36,6 @@ fn main() {
 
     cam.render(&world);
 }
-
-// pub fn ray_color(r: &Ray, world: &World) -> Color {
-//     if let Some(hit) = world.any_hit(r, Interval::new(0., f64::INFINITY)) {
-//         return (hit.normal + Color::from_floats(1., 1., 1.)).mul(0.5);
-//     }
-//
-//     let unit_dir = r.direction.norm();
-//     let a = (unit_dir.y() + 1.) * 0.5;
-//     return Color::from_floats(1., 1., 1.).mul(1. - a) + Color::from_floats(0.5, 0.7, 1.).mul(a);
-// }
 
 pub fn sphere_hit(center: &Point3, radius: f64, r: &Ray) -> f64 {
     let oc = *center - r.origin;
