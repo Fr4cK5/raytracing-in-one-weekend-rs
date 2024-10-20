@@ -10,7 +10,7 @@ use vec3::{Point3, Vec3};
 use world::World;
 
 mod camera;
-mod color_utils;
+mod utils;
 mod hit;
 mod interval;
 mod ray;
@@ -33,6 +33,8 @@ fn main() {
     let mut cam = Camera::default();
     cam.aspect_ratio = 16. / 9.;
     cam.img_width = 400;
+    cam.samples_per_pixel = 500;
+    cam.max_bounces_per_ray = 50;
 
     cam.render(&world);
 }
@@ -43,7 +45,7 @@ pub fn sphere_hit(center: &Point3, radius: f64, r: &Ray) -> f64 {
     let h = r.direction.dot(&oc);
     let c = oc.len_squared() - radius * radius;
 
-    // Woudl call this "discriminant", but the LSP suggestions suck
+    // Would call this "discriminant", but the LSP suggestions suck
     let disc = h * h - a * c;
 
     if disc < 0. {

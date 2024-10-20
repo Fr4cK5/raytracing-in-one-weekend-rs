@@ -1,12 +1,19 @@
 use std::{fs, time::Instant};
 
 use crate::{
-    color_utils, interval::Interval, ray::Ray, vec3::{Color, Point3, Vec3}, world::{AnyHit, World}
+    interval::Interval,
+    ray::Ray,
+    utils,
+    vec3::{Color, Point3, Vec3},
+    world::{AnyHit, World},
 };
 
 pub struct Camera {
     pub aspect_ratio: f64,
     pub img_width: i32,
+    pub samples_per_pixel: i32,
+    pub max_bounces_per_ray: i32,
+    pixel_samples_scale: f64,
     img_height: i32,
     center: Point3,
     first_pixel: Point3,
@@ -24,12 +31,13 @@ impl Camera {
         let start = Instant::now();
         for y in 0..self.img_height {
             for x in 0..self.img_width {
-                let pixel_center =
-                    self.first_pixel + (self.pixel_delta_x.mul(x as f64) + self.pixel_delta_y.mul(y as f64));
-                let ray_dir = pixel_center - self.center;
-                let r = Ray::new(self.center, ray_dir);
-                let col = Self::ray_color(&r, &world);
-                color_utils::write_color(&mut buf, &col);
+                let mut col = Color::default();
+                for _ in 0..self.samples_per_pixel {
+                    let r = self.get_ray(x, y);
+                    col += self.ray_color(&r, world, 1);
+                }
+
+                utils::write_color(&mut buf, &col.mul(self.pixel_samples_scale));
             }
         }
 
@@ -45,6 +53,7 @@ impl Camera {
 
     fn init(&mut self) {
         self.img_height = ((self.img_width as f64 / self.aspect_ratio) as i32).max(1);
+        self.pixel_samples_scale = 1. / self.samples_per_pixel as f64;
 
         // Viewoprt Dimensions
         let focal_length = 1.;
@@ -65,15 +74,36 @@ impl Camera {
         self.first_pixel = viewport_upper_left + (self.pixel_delta_x + self.pixel_delta_y).mul(0.5);
     }
 
-    fn ray_color(r: &Ray, world: &World) -> Color {
-        if let Some(hit) = world.any_hit(r, Interval::new(0., f64::INFINITY)) {
-            return (hit.normal + Color::from_floats(1., 1., 1.)).mul(0.5);
+    fn ray_color(&self, r: &Ray, world: &World, depth: i32) -> Color {
+        if depth >= self.max_bounces_per_ray {
+            return Color::default();
+        }
+
+        if let Some(hit) = world.any_hit(r, Interval::new(0.001, f64::INFINITY)) {
+            let dir = Vec3::random_on_hemisphere(&hit.normal) + Vec3::random_on_unit_sphere();
+            return self.ray_color(&Ray::new(hit.p, dir), world, depth + 1).mul(0.5);
         }
 
         let unit_dir = r.direction.norm();
         let a = (unit_dir.y() + 1.) * 0.5;
         return Color::from_floats(1., 1., 1.).mul(1. - a)
             + Color::from_floats(0.5, 0.7, 1.).mul(a);
+    }
+
+    fn get_ray(&self, x: i32, y: i32) -> Ray {
+        let offset = Self::sample_square();
+        let pixel_sample = self.first_pixel
+            + (self.pixel_delta_x.mul(x as f64 + offset.x()))
+            + (self.pixel_delta_y.mul(y as f64 + offset.y()));
+
+        let ray_origin = self.center;
+        let ray_dir = pixel_sample - ray_origin;
+
+        return Ray::new(ray_origin, ray_dir);
+    }
+
+    fn sample_square() -> Vec3 {
+        return Vec3(utils::rand_float() - 0.5, utils::rand_float() - 0.5, 0.);
     }
 }
 
@@ -82,6 +112,9 @@ impl Default for Camera {
         return Self {
             aspect_ratio: 1.,
             img_width: 100,
+            samples_per_pixel: 10,
+            max_bounces_per_ray: 10,
+            pixel_samples_scale: 1.,
             img_height: 0,
             center: Point3::default(),
             first_pixel: Point3::default(),

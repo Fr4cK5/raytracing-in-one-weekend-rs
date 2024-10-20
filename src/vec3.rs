@@ -2,6 +2,8 @@
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
+use crate::utils;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Vec3(pub f64, pub f64, pub f64);
 pub type Point3 = Vec3;
@@ -22,6 +24,11 @@ impl Vec3 {
     }
     pub fn inv(&self) -> Self {
         return Self(-self.0, -self.1, -self.2);
+    }
+    pub fn inv_mut(&mut self) {
+        self.0 = -self.0;
+        self.1 = -self.1;
+        self.2 = -self.2;
     }
 
     #[inline]
@@ -76,6 +83,42 @@ impl Vec3 {
     pub fn from_floats(a: f64, b: f64, c: f64) -> Vec3 {
         return Vec3(a, b, c);
     }
+
+    pub fn random() -> Vec3 {
+        return Vec3(
+            utils::rand_float(),
+            utils::rand_float(),
+            utils::rand_float(),
+        );
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        return Vec3(
+            utils::rand_float_range(min, max),
+            utils::rand_float_range(min, max),
+            utils::rand_float_range(min, max),
+        );
+    }
+
+    pub fn random_on_unit_sphere() -> Vec3 {
+        loop {
+            let v = Self::random_range(-1., 1.);
+            let len_squared = v.len_squared();
+            // Small floating point hole in the center can underflow to 0
+            if 1e-160 < len_squared && len_squared <= 1. {
+                return v.norm();
+            }
+        }
+    }
+
+    pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
+        let mut on_unit_sphere = Self::random_on_unit_sphere();
+        if on_unit_sphere.dot(normal) <= 0. {
+            on_unit_sphere.inv_mut();
+        }
+        return on_unit_sphere;
+    }
+
 }
 
 impl SubAssign for Vec3 {
