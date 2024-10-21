@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{rc::Rc, sync::Arc};
 
 use crate::{
     material::{lambertian::Lambertian, Material},
@@ -11,7 +11,7 @@ pub struct Hit {
     pub normal: Vec3,
     pub t: f64,
     pub front_face: bool,
-    pub material: Option<Rc<dyn Material>>,
+    pub material: Option<Arc<dyn Material>>,
 }
 
 impl Hit {
@@ -32,7 +32,7 @@ impl Default for Hit {
             normal: Vec3::default(),
             t: 0.,
             front_face: true,
-            material: Some(Rc::new(Lambertian::default())),
+            material: Some(Arc::new(Lambertian::default())),
         };
     }
 }

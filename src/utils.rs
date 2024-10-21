@@ -1,6 +1,8 @@
+use std::{cell::RefCell, sync::{Arc, Mutex}};
+
 use crate::{interval::Interval, vec3::Color};
 
-pub fn write_color(out: &mut Vec<String>, col: &Color) {
+pub fn write_color(out: Arc<Mutex<Vec<String>>>, col: &Color, x: usize, y: usize, width: usize, height: usize) {
     let intensity = Interval::new(0., 0.99999);
 
     let line = format!("{} {} {}",
@@ -8,7 +10,8 @@ pub fn write_color(out: &mut Vec<String>, col: &Color) {
         (256f64 * intensity.clamp(col.1.to_gamma())) as u8,
         (256f64 * intensity.clamp(col.2.to_gamma())) as u8,
     );
-    out.push(line);
+    let mut handle = out.lock().unwrap();
+    handle[width * y + x] = line;
 }
 
 #[inline]

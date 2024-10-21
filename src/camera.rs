@@ -1,4 +1,6 @@
-use std::{fs, time::Instant};
+use std::{fs, sync::{Arc, Mutex}, time::Instant};
+
+use rayon::iter::{ParallelBridge, ParallelIterator};
 
 use crate::{
     interval::Interval,
@@ -22,31 +24,39 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn render(&mut self, world: &World) {
+    pub fn render(&mut self, world: Arc<World>) {
         self.init();
 
         let headers = format!("P3\n{} {}\n255\n", self.img_width, self.img_height);
-        let mut buf = Vec::<String>::new();
+        let buf = Arc::new(Mutex::new(Vec::<String>::with_capacity(self.img_width as usize * self.img_height as usize)));
+
+        let mut buf_lock = buf.lock().unwrap();
+        buf_lock.resize_with(self.img_width as usize * self.img_height as usize, Default::default);
+        drop(buf_lock);
 
         let start = Instant::now();
-        for y in 0..self.img_height {
+        (0..self.img_height).par_bridge().for_each(|y| {
             for x in 0..self.img_width {
                 let mut col = Color::default();
                 for _ in 0..self.samples_per_pixel {
                     let r = self.get_ray(x, y);
-                    col += self.ray_color(&r, world, 1);
+                    col += self.ray_color(&r, &world, 1);
                 }
 
-                utils::write_color(&mut buf, &col.mul(self.pixel_samples_scale));
+                utils::write_color(Arc::clone(&buf), &col.mul(self.pixel_samples_scale), x as usize, y as usize, self.img_width as usize, self.img_height as usize);
             }
-        }
+        });
 
-        println!("RT took: {:?}", start.elapsed());
+        println!("\nRT took: {:?}", start.elapsed());
+
+        let buf_lock = buf.lock().unwrap();
 
         let out = headers
             .chars()
-            .chain(buf.join("\n").chars())
+            .chain(buf_lock.join("\n").chars())
             .collect::<String>();
+
+        drop(buf_lock);
 
         fs::write("test-img.ppm", out.as_bytes()).expect("Unable to write to file");
     }

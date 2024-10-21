@@ -1,6 +1,8 @@
+use std::sync::Arc;
+
 use crate::{hit::Hit, interval::Interval, ray::Ray, sphere::Sphere};
 
-pub type World = Vec<Sphere>;
+pub type World = Vec<Arc<Sphere>>;
 
 pub trait AnyHit {
     fn any_hit(&self, r: &Ray, interval: Interval) -> Option<Hit>;
