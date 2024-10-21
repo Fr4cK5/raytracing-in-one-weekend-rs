@@ -65,9 +65,9 @@ fn main() {
 
     let mut cam = Camera::default();
     cam.aspect_ratio = 16. / 9.;
-    cam.img_width = 400;
-    cam.samples_per_pixel = 500;
-    cam.max_bounces_per_ray = 50;
+    cam.img_width = 400;            // 2560
+    cam.samples_per_pixel = 500;    // 1000
+    cam.max_bounces_per_ray = 50;   // 100
 
     cam.render(&world);
 }

@@ -2,8 +2,6 @@ use crate::{hit::Hit, ray::Ray, vec3::Color};
 
 pub mod lambertian;
 pub mod metal;
-// pub use metal::Metal;
-// pub use lambertian::Lambertian;
 
 pub struct Scatter {
     pub attenuation: Color,
