@@ -1,7 +1,10 @@
-use crate::{hit::Hit, ray::Ray, vec3::{Color, Vec3}};
+use crate::{
+    hit::Hit,
+    ray::Ray,
+    vec3::{Color, Vec3},
+};
 
 use super::{Material, Scatter};
-
 
 pub struct Lambertian {
     pub albedo: Color,

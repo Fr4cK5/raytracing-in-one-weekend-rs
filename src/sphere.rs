@@ -1,8 +1,14 @@
 #![allow(dead_code)]
 
-use std::{rc::Rc, sync::Arc};
+use std::sync::Arc;
 
-use crate::{hit::Hit, interval::Interval, material::Material, ray::Ray, vec3::{Point3, Vec3}};
+use crate::{
+    hit::Hit,
+    interval::Interval,
+    material::Material,
+    ray::Ray,
+    vec3::{Point3, Vec3},
+};
 
 pub struct Sphere {
     pub center: Point3,
@@ -12,7 +18,11 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(center: Vec3, radius: f64, material: Arc<dyn Material>) -> Self {
-        return Self { center, radius, material };
+        return Self {
+            center,
+            radius,
+            material,
+        };
     }
 
     pub fn hit(&self, r: &Ray, interval: &Interval, hit: &mut Hit) -> bool {
@@ -45,5 +55,4 @@ impl Sphere {
 
         return true;
     }
-
 }

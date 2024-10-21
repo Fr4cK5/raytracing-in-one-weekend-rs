@@ -3,7 +3,7 @@
 #![allow(clippy::needless_return)]
 
 use core::f64;
-use std::{rc::Rc, sync::Arc};
+use std::sync::Arc;
 
 use camera::Camera;
 use material::{lambertian::Lambertian, metal::Metal, Material};
@@ -22,7 +22,6 @@ mod vec3;
 mod world;
 
 fn main() {
-
     let mat_ground: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: Vec3(0.4, 0.6, 0.1),
     });
@@ -65,9 +64,9 @@ fn main() {
 
     let mut cam = Camera::default();
     cam.aspect_ratio = 16. / 9.;
-    cam.img_width = 400;            // 2560
-    cam.samples_per_pixel = 200;    // 1000
-    cam.max_bounces_per_ray = 50;   // 100
+    cam.img_width = 400; // 2560
+    cam.samples_per_pixel = 200; // 1000
+    cam.max_bounces_per_ray = 50; // 100
 
     cam.render(Arc::new(world));
 }

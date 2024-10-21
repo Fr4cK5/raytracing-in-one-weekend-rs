@@ -1,4 +1,8 @@
-use std::{fs, sync::{Arc, Mutex}, time::Instant};
+use std::{
+    fs,
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 
 use rayon::iter::{ParallelBridge, ParallelIterator};
 
@@ -28,10 +32,15 @@ impl Camera {
         self.init();
 
         let headers = format!("P3\n{} {}\n255\n", self.img_width, self.img_height);
-        let buf = Arc::new(Mutex::new(Vec::<String>::with_capacity(self.img_width as usize * self.img_height as usize)));
+        let buf = Arc::new(Mutex::new(Vec::<String>::with_capacity(
+            self.img_width as usize * self.img_height as usize,
+        )));
 
         let mut buf_lock = buf.lock().unwrap();
-        buf_lock.resize_with(self.img_width as usize * self.img_height as usize, Default::default);
+        buf_lock.resize_with(
+            self.img_width as usize * self.img_height as usize,
+            Default::default,
+        );
         drop(buf_lock);
 
         let start = Instant::now();
@@ -43,7 +52,13 @@ impl Camera {
                     col += self.ray_color(&r, &world, 1);
                 }
 
-                utils::write_color(Arc::clone(&buf), &col.mul(self.pixel_samples_scale), x as usize, y as usize, self.img_width as usize, self.img_height as usize);
+                utils::write_color(
+                    Arc::clone(&buf),
+                    &col.mul(self.pixel_samples_scale),
+                    x as usize,
+                    y as usize,
+                    self.img_width as usize,
+                );
             }
         });
 
