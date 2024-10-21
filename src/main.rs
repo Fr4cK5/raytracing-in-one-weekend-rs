@@ -40,27 +40,27 @@ fn main() {
 
     // Scene
     let mut world = World::new();
-    world.push(Arc::new(sphere::Sphere {
+    world.push(sphere::Sphere {
         center: Vec3::from_floats(0., -100.5, -1.),
         radius: 100.,
         material: Arc::clone(&mat_ground),
-    }));
+    });
 
-    world.push(Arc::new(sphere::Sphere {
+    world.push(sphere::Sphere {
         center: Vec3::from_floats(-1., 0., -1.),
         radius: 0.5,
         material: Arc::clone(&mat_left),
-    }));
-    world.push(Arc::new(sphere::Sphere {
+    });
+    world.push(sphere::Sphere {
         center: Vec3::from_floats(0., 0., -1.2),
         radius: 0.5,
         material: Arc::clone(&mat_center),
-    }));
-    world.push(Arc::new(sphere::Sphere {
+    });
+    world.push(sphere::Sphere {
         center: Vec3::from_floats(1., 0., -1.),
         radius: 0.5,
         material: Arc::clone(&mat_right),
-    }));
+    });
 
     let mut cam = Camera::default();
     cam.aspect_ratio = 16. / 9.;
