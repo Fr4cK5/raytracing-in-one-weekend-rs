@@ -1,15 +1,18 @@
 #![allow(dead_code)]
 
-use crate::{hit::Hit, interval::Interval, ray::Ray, vec3::{Point3, Vec3}};
+use std::rc::Rc;
+
+use crate::{hit::Hit, interval::Interval, material::Material, ray::Ray, vec3::{Point3, Vec3}};
 
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,
+    pub material: Rc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f64) -> Self {
-        return Self { center, radius };
+    pub fn new(center: Vec3, radius: f64, material: Rc<dyn Material>) -> Self {
+        return Self { center, radius, material };
     }
 
     pub fn hit(&self, r: &Ray, interval: &Interval, hit: &mut Hit) -> bool {
@@ -38,6 +41,7 @@ impl Sphere {
         hit.p = r.at(hit.t);
         let outward_normal = (hit.p - self.center).div(self.radius);
         hit.set_face_normal(r, &outward_normal);
+        hit.material = Some(Rc::clone(&self.material));
 
         return true;
     }

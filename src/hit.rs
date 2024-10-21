@@ -1,10 +1,17 @@
-use crate::{ray::Ray, vec3::{Point3, Vec3}};
+use std::rc::Rc;
+
+use crate::{
+    material::{lambertian::Lambertian, Material},
+    ray::Ray,
+    vec3::{Point3, Vec3},
+};
 
 pub struct Hit {
     pub p: Point3,
     pub normal: Vec3,
     pub t: f64,
     pub front_face: bool,
+    pub material: Option<Rc<dyn Material>>,
 }
 
 impl Hit {
@@ -17,6 +24,7 @@ impl Hit {
         }
     }
 }
+
 impl Default for Hit {
     fn default() -> Self {
         return Self {
@@ -24,6 +32,7 @@ impl Default for Hit {
             normal: Vec3::default(),
             t: 0.,
             front_face: true,
+            material: Some(Rc::new(Lambertian::default())),
         };
     }
 }

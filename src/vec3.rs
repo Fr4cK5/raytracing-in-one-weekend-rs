@@ -69,11 +69,12 @@ impl Vec3 {
     }
     pub fn norm(&self) -> Vec3 {
         let len = self.len();
-        return Vec3(
-            self.0 / len,
-            self.1 / len,
-            self.2 / len,
-        );
+        return Vec3(self.0 / len, self.1 / len, self.2 / len);
+    }
+
+    pub fn is_near_zero(&self) -> bool {
+        let t = 1e-8;
+        return self.0.abs() < t && self.1.abs() < t && self.2.abs() < t;
     }
 
     pub fn from_tup(base: (f64, f64, f64)) -> Vec3 {
@@ -119,6 +120,9 @@ impl Vec3 {
         return on_unit_sphere;
     }
 
+    pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+        return *v - n.mul(v.dot(n) * 2.);
+    }
 }
 
 impl SubAssign for Vec3 {
@@ -132,11 +136,7 @@ impl SubAssign for Vec3 {
 impl Sub for Vec3 {
     type Output = Vec3;
     fn sub(self, rhs: Self) -> Self::Output {
-        return Vec3(
-            self.0 - rhs.0,
-            self.1 - rhs.1,
-            self.2 - rhs.2,
-        );
+        return Vec3(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2);
     }
 }
 
@@ -151,22 +151,14 @@ impl AddAssign for Vec3 {
 impl Add for Vec3 {
     type Output = Vec3;
     fn add(self, rhs: Self) -> Self::Output {
-        return Self(
-            self.0 + rhs.0,
-            self.1 + rhs.1,
-            self.2 + rhs.2,
-        );
+        return Self(self.0 + rhs.0, self.1 + rhs.1, self.2 + rhs.2);
     }
 }
 
 impl Mul for Vec3 {
     type Output = Vec3;
     fn mul(self, rhs: Self) -> Self::Output {
-        return Self(
-            self.0 * rhs.0,
-            self.1 * rhs.1,
-            self.2 * rhs.2,
-        );
+        return Self(self.0 * rhs.0, self.1 * rhs.1, self.2 * rhs.2);
     }
 }
 
@@ -181,11 +173,7 @@ impl MulAssign for Vec3 {
 impl Div for Vec3 {
     type Output = Vec3;
     fn div(self, rhs: Self) -> Self::Output {
-        return Self(
-            self.0 / rhs.0,
-            self.1 / rhs.1,
-            self.2 / rhs.2,
-        );
+        return Self(self.0 / rhs.0, self.1 / rhs.1, self.2 / rhs.2);
     }
 }
 

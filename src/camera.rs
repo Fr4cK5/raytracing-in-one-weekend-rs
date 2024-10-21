@@ -80,8 +80,12 @@ impl Camera {
         }
 
         if let Some(hit) = world.any_hit(r, Interval::new(0.001, f64::INFINITY)) {
-            let dir = Vec3::random_on_hemisphere(&hit.normal) + Vec3::random_on_unit_sphere();
-            return self.ray_color(&Ray::new(hit.p, dir), world, depth + 1).mul(0.5);
+            if let Some(mat) = &hit.material {
+                if let Some(scat) = mat.scatter(r, &hit) {
+                    return scat.attenuation * self.ray_color(&scat.ray, world, depth + 1);
+                }
+            }
+            return Color::from_floats(0., 0., 0.);
         }
 
         let unit_dir = r.direction.norm();
