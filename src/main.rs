@@ -6,7 +6,7 @@ use core::f64;
 use std::sync::Arc;
 
 use camera::Camera;
-use material::{lambertian::Lambertian, metal::Metal, Material};
+use material::{dialectric::Dialectric, lambertian::Lambertian, metal::Metal, Material};
 use ray::Ray;
 use vec3::{Point3, Vec3};
 use world::World;
@@ -33,6 +33,9 @@ fn main() {
     let mat_center: Arc<dyn Material> = Arc::new(Lambertian {
         albedo: Vec3(0.5, 0.1, 0.9),
     });
+    let mat_center_glass: Arc<dyn Material> = Arc::new(Dialectric {
+        refrecation_index: 1. / 1.33,
+    });
     let mat_right: Arc<dyn Material> = Arc::new(Metal {
         albedo: Vec3(1., 0.6, 0.),
         fuzz: 0.3,
@@ -52,9 +55,14 @@ fn main() {
         material: Arc::clone(&mat_left),
     });
     world.push(sphere::Sphere {
-        center: Vec3::from_floats(0., 0., -1.2),
+        center: Vec3::from_floats(0., 0., -2.),
         radius: 0.5,
         material: Arc::clone(&mat_center),
+    });
+    world.push(sphere::Sphere {
+        center: Vec3::from_floats(0., 0., -1.2),
+        radius: 0.5,
+        material: Arc::clone(&mat_center_glass),
     });
     world.push(sphere::Sphere {
         center: Vec3::from_floats(1., 0., -1.),

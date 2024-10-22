@@ -1,5 +1,6 @@
 use crate::{hit::Hit, ray::Ray, vec3::Color};
 
+pub mod dialectric;
 pub mod lambertian;
 pub mod metal;
 

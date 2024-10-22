@@ -123,6 +123,14 @@ impl Vec3 {
     pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
         return *v - n.mul(v.dot(n) * 2.);
     }
+
+    pub fn refract(uv: &Vec3, n: &Vec3, refraction_index: f64) -> Vec3 {
+        let cos_theta = uv.inv().dot(n).min(1.);
+        let out_perp = *uv + n.mul(cos_theta);
+        let out_perp = (&out_perp).mul(refraction_index);
+        let out_par = n.mul(-(1. - out_perp.len_squared()).abs().sqrt());
+        return out_perp + out_par;
+    }
 }
 
 impl SubAssign for Vec3 {
