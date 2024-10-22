@@ -81,10 +81,12 @@ impl Vec3 {
         return Vec3(base.0, base.1, base.2);
     }
 
+    #[inline]
     pub fn from_floats(a: f64, b: f64, c: f64) -> Vec3 {
         return Vec3(a, b, c);
     }
 
+    #[inline]
     pub fn random() -> Vec3 {
         return Vec3(
             utils::rand_float(),
@@ -93,6 +95,7 @@ impl Vec3 {
         );
     }
 
+    #[inline]
     pub fn random_range(min: f64, max: f64) -> Vec3 {
         return Vec3(
             utils::rand_float_range(min, max),
@@ -101,6 +104,7 @@ impl Vec3 {
         );
     }
 
+    #[inline]
     pub fn random_on_unit_sphere() -> Vec3 {
         loop {
             let v = Self::random_range(-1., 1.);
@@ -112,6 +116,7 @@ impl Vec3 {
         }
     }
 
+    #[inline]
     pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
         let mut on_unit_sphere = Self::random_on_unit_sphere();
         if on_unit_sphere.dot(normal) <= 0. {
@@ -130,6 +135,20 @@ impl Vec3 {
         let out_perp = (&out_perp).mul(refraction_index);
         let out_par = n.mul(-(1. - out_perp.len_squared()).abs().sqrt());
         return out_perp + out_par;
+    }
+
+    #[inline]
+    pub fn random_in_unit_disk() -> Vec3 {
+        loop {
+            let p = Self::from_floats(
+                utils::rand_float_range(-1., 1.),
+                utils::rand_float_range(-1., 1.),
+                0.,
+            );
+            if p.len_squared() < 1. {
+                return p;
+            }
+        }
     }
 }
 

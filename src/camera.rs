@@ -23,6 +23,8 @@ pub struct Camera {
     pub look_from: Point3,
     pub look_at: Point3,
     pub vup: Point3,
+    pub defocus_angle: f64,
+    pub focus_dist: f64,
     pixel_samples_scale: f64,
     img_height: i32,
     center: Point3,
@@ -32,6 +34,8 @@ pub struct Camera {
     x: Vec3,
     y: Vec3,
     z: Vec3,
+    defocus_disk_x: Vec3,
+    defocus_disk_y: Vec3,
 }
 
 impl Camera {
@@ -90,10 +94,9 @@ impl Camera {
         self.center = self.look_from;
 
         // Viewoprt Dimensions
-        let focal_length = 1.;
         let theta = self.vertical_fov.to_radians();
         let h = (theta / 2.).tan();
-        let viewport_height = 2. * h * focal_length;
+        let viewport_height = 2. * h * self.focus_dist;
         let viewport_width = viewport_height * (self.img_width as f64 / self.img_height as f64);
 
         // x, y, z unit basis vectors for camera coordinate frame
@@ -110,9 +113,14 @@ impl Camera {
         self.pixel_delta_y = viewport_y.div(self.img_height as f64);
 
         let viewport_upper_left =
-            self.center - self.z.mul(focal_length) - viewport_x.div(2.) - viewport_y.div(2.);
+            self.center - self.z.mul(self.focus_dist) - viewport_x.div(2.) - viewport_y.div(2.);
 
         self.first_pixel = viewport_upper_left + (self.pixel_delta_x + self.pixel_delta_y).mul(0.5);
+
+        // Camera Defocus of upper left pixel
+        let defocus_radius = self.focus_dist * (self.defocus_angle / 2.).to_radians().tan();
+        self.defocus_disk_x = self.x.mul(defocus_radius);
+        self.defocus_disk_y = self.y.mul(defocus_radius);
     }
 
     fn ray_color(&self, r: &Ray, world: &World, depth: i32) -> Color {
@@ -141,10 +149,19 @@ impl Camera {
             + (self.pixel_delta_x.mul(x as f64 + offset.x()))
             + (self.pixel_delta_y.mul(y as f64 + offset.y()));
 
-        let ray_origin = self.center;
+        let ray_origin = if self.defocus_angle <= 0. {
+            self.center
+        } else {
+            self.defocus_disk_sample()
+        };
         let ray_dir = pixel_sample - ray_origin;
 
         return Ray::new(ray_origin, ray_dir);
+    }
+
+    fn defocus_disk_sample(&self) -> Point3 {
+        let p = Vec3::random_in_unit_disk();
+        return self.center + (self.defocus_disk_x.mul(p.0)) + (self.defocus_disk_y.mul(p.1));
     }
 
     fn sample_square() -> Vec3 {
@@ -164,6 +181,8 @@ impl Default for Camera {
             vup: Vec3::from_floats(0., 1., 0.),
             vertical_fov: 90.,
             pixel_samples_scale: 1.,
+            defocus_angle: 0.,
+            focus_dist: 10.,
             img_height: 0,
             center: Point3::default(),
             first_pixel: Point3::default(),
@@ -172,6 +191,8 @@ impl Default for Camera {
             x: Vec3::default(),
             y: Vec3::default(),
             z: Vec3::default(),
+            defocus_disk_x: Vec3::default(),
+            defocus_disk_y: Vec3::default(),
         };
     }
 }

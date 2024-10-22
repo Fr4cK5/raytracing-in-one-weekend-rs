@@ -76,10 +76,14 @@ fn main() {
     cam.img_width = 400; // 2560
     cam.samples_per_pixel = 200; // 1000
     cam.max_bounces_per_ray = 50; // 100
+
     cam.vertical_fov = 35.;
     cam.look_from = Point3::from_floats(-2., 2., 0.);
     cam.look_at = Point3::from_floats(0., 0., -1.);
     cam.vup = Point3::from_floats(0., 1., 0.);
+
+    cam.defocus_angle = 0.0; // 10, set to 0 to remove the Defocus Blur (DoF)
+    cam.focus_dist = 3.4; // 3.4
 
     cam.render(Arc::new(world));
 }
