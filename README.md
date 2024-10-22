@@ -1,9 +1,7 @@
-# RT in one weekend
+# Ray Tracing in One Weekend
 
-This is an implementation of the book and online-post "Raytracing in one weekend".
-
-If you'd like to do this yourself, check it out [here](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
-For an overview of all other available resources, visit their [io page](https://raytracing.github.io/)!
+This is an implementation of the book [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html). (v4.0.1 at the time of writing.)
+For an overview of all other available resources, check out their [io-page](https://raytracing.github.io/).
 
 # Usage
 
@@ -13,5 +11,5 @@ cd ./rtiow
 cargo run -r
 ```
 
-After running the program, you'll find a file `test-img.pmm` in the project's root directory.
+After running, you'll find a file `test-img.pmm` in the project's root directory.
 To look at it either use [GIMP](https://www.gimp.org/) or some online PPM-Viewer tool.
