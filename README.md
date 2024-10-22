@@ -16,8 +16,9 @@ After running it, you'll find a file `test-img.pmm` in the project's root direct
 To look at it either use [GIMP](https://www.gimp.org/) or some online PPM-Viewer tool.
 
 # An Example
+This was rendered with following quality settings.
 - 2560x1440 Resolution
 - 1000 Samples/px
 - 50 Bounces
 
-![final-render](https://raw.githubusercontent.com/Fr4cK5/raytracing-in-one-weekend-rs/refs/heads/master/final-render.jpeg?token=GHSAT0AAAAAACVTC5AXEQHRAOOQWSIJEXDIZYYGDHQ)
+![final-render](https://github.com/Fr4cK5/raytracing-in-one-weekend-rs/blob/master/final-render.jpeg?raw=true)
