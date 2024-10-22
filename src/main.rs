@@ -86,15 +86,15 @@ fn main() {
 
     let mut cam = Camera::default();
     cam.aspect_ratio = 16. / 9.;
-    cam.img_width = 400; // 2560
-    cam.samples_per_pixel = 200; // 1000
-    cam.max_bounces_per_ray = 50; // 100
+    cam.img_width = 400; // 400, 2560
+    cam.samples_per_pixel = 200; // 200, 1000
+    cam.max_bounces_per_ray = 50; // 50, 100
 
+    // These can be commented out for default values.
     cam.vertical_fov = 30.;
     cam.look_from = Point3::from_floats(13., 2., 3.);
     cam.look_at = Point3::from_floats(0., 0., 0.);
     cam.vup = Point3::from_floats(0., 1., 0.);
-
     cam.defocus_angle = 0.6; // 10, set to 0 to remove the Defocus Blur (DoF)
     cam.focus_dist = 10.; // 3.4
 
