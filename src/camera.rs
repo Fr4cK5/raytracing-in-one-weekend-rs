@@ -19,12 +19,19 @@ pub struct Camera {
     pub img_width: i32,
     pub samples_per_pixel: i32,
     pub max_bounces_per_ray: i32,
+    pub vertical_fov: f64,
+    pub look_from: Point3,
+    pub look_at: Point3,
+    pub vup: Point3,
     pixel_samples_scale: f64,
     img_height: i32,
     center: Point3,
     first_pixel: Point3,
     pixel_delta_x: Vec3,
     pixel_delta_y: Vec3,
+    x: Vec3,
+    y: Vec3,
+    z: Vec3,
 }
 
 impl Camera {
@@ -80,21 +87,30 @@ impl Camera {
         self.img_height = ((self.img_width as f64 / self.aspect_ratio) as i32).max(1);
         self.pixel_samples_scale = 1. / self.samples_per_pixel as f64;
 
+        self.center = self.look_from;
+
         // Viewoprt Dimensions
         let focal_length = 1.;
-        let viewport_height = 2.;
+        let theta = self.vertical_fov.to_radians();
+        let h = (theta / 2.).tan();
+        let viewport_height = 2. * h * focal_length;
         let viewport_width = viewport_height * (self.img_width as f64 / self.img_height as f64);
 
+        // x, y, z unit basis vectors for camera coordinate frame
+        self.z = (self.look_from - self.look_at).norm();
+        self.x = self.vup.cross(&self.z).norm();
+        self.y = self.z.cross(&self.x);
+
         // Viewport Vectors
-        let viewport_x = Vec3::from_floats(viewport_width, 0., 0.);
-        let viewport_y = Vec3::from_floats(0., -viewport_height, 0.);
+        let viewport_x = self.x.mul(viewport_width);
+        let viewport_y = self.y.inv().mul(viewport_height);
 
         // Viewport Delta Vectors
         self.pixel_delta_x = viewport_x.div(self.img_width as f64);
         self.pixel_delta_y = viewport_y.div(self.img_height as f64);
 
         let viewport_upper_left =
-            self.center - Vec3(0., 0., focal_length) - viewport_x.div(2.) - viewport_y.div(2.);
+            self.center - self.z.mul(focal_length) - viewport_x.div(2.) - viewport_y.div(2.);
 
         self.first_pixel = viewport_upper_left + (self.pixel_delta_x + self.pixel_delta_y).mul(0.5);
     }
@@ -143,12 +159,19 @@ impl Default for Camera {
             img_width: 100,
             samples_per_pixel: 10,
             max_bounces_per_ray: 10,
+            look_from: Vec3::from_floats(0., 0., 0.),
+            look_at: Vec3::from_floats(0., 0., -1.),
+            vup: Vec3::from_floats(0., 1., 0.),
+            vertical_fov: 90.,
             pixel_samples_scale: 1.,
             img_height: 0,
             center: Point3::default(),
             first_pixel: Point3::default(),
             pixel_delta_x: Vec3::default(),
             pixel_delta_y: Vec3::default(),
+            x: Vec3::default(),
+            y: Vec3::default(),
+            z: Vec3::default(),
         };
     }
 }

@@ -8,6 +8,7 @@ use std::sync::Arc;
 use camera::Camera;
 use material::{dialectric::Dialectric, lambertian::Lambertian, metal::Metal, Material};
 use ray::Ray;
+use sphere::Sphere;
 use vec3::{Point3, Vec3};
 use world::World;
 
@@ -43,28 +44,28 @@ fn main() {
 
     // Scene
     let mut world = World::new();
-    world.push(sphere::Sphere {
+    world.push(Sphere {
         center: Vec3::from_floats(0., -100.5, -1.),
         radius: 100.,
         material: Arc::clone(&mat_ground),
     });
 
-    world.push(sphere::Sphere {
+    world.push(Sphere {
         center: Vec3::from_floats(-1., 0., -1.),
         radius: 0.5,
         material: Arc::clone(&mat_left),
     });
-    world.push(sphere::Sphere {
-        center: Vec3::from_floats(0., 0., -2.),
+    world.push(Sphere {
+        center: Vec3::from_floats(0., 0., -2.4),
         radius: 0.5,
         material: Arc::clone(&mat_center),
     });
-    world.push(sphere::Sphere {
+    world.push(Sphere {
         center: Vec3::from_floats(0., 0., -1.2),
         radius: 0.5,
         material: Arc::clone(&mat_center_glass),
     });
-    world.push(sphere::Sphere {
+    world.push(Sphere {
         center: Vec3::from_floats(1., 0., -1.),
         radius: 0.5,
         material: Arc::clone(&mat_right),
@@ -75,6 +76,10 @@ fn main() {
     cam.img_width = 400; // 2560
     cam.samples_per_pixel = 200; // 1000
     cam.max_bounces_per_ray = 50; // 100
+    cam.vertical_fov = 35.;
+    cam.look_from = Point3::from_floats(-2., 2., 0.);
+    cam.look_at = Point3::from_floats(0., 0., -1.);
+    cam.vup = Point3::from_floats(0., 1., 0.);
 
     cam.render(Arc::new(world));
 }
